@@ -1,0 +1,272 @@
+*******************  ASSIGNMENT  #2 ******************
+
+Below are the queries for each requirement:
+
+ *QUERIES*
+
+
+-- 1. Countries and their continents (ordered by continent) :
+
+SELECT COUNTRY_NAME, CONTINENT 
+FROM COUNTRIES 
+ORDER BY CONTINENT;
+
+
+
+-- 2. Number of countries within each continent :
+
+SELECT CONTINENT, COUNT(*) AS num_countries 
+FROM COUNTRIES 
+GROUP BY CONTINENT;
+
+
+
+-- 3. Countries with no car makers :
+
+SELECT COUNTRY_NAME 
+FROM COUNTRIES c
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM CAR_MAKERS cm 
+    WHERE c.COUNTRY_ID = cm.COUNTRY_ID
+);
+
+
+
+-- 4. List of car makers from Japan :
+
+SELECT MAKER_NAME 
+FROM CAR_MAKERS 
+WHERE COUNTRY_ID = (SELECT COUNTRY_ID FROM COUNTRIES WHERE COUNTRY_NAME = 'Japan');
+
+
+
+-- 5. List of car makers from France and USA :
+
+SELECT MAKER_NAME 
+FROM CAR_MAKERS 
+WHERE COUNTRY_ID IN (
+    SELECT COUNTRY_ID 
+    FROM COUNTRIES 
+    WHERE COUNTRY_NAME IN ('France', 'USA')
+);
+
+
+
+-- 6. Country and continent of Volvo car maker :
+
+SELECT c.COUNTRY_NAME, c.CONTINENT 
+FROM COUNTRIES c
+JOIN CAR_MAKERS cm ON c.COUNTRY_ID = cm.COUNTRY_ID
+WHERE cm.MAKER_NAME = 'Volvo';
+
+
+
+-- 7. Car models from "Ford Motor Company" :
+
+SELECT MODEL_NAME 
+FROM CAR_MODELS 
+WHERE MAKER_ID = (SELECT MAKER_ID FROM CAR_MAKERS WHERE MAKER_NAME = 'Ford Motor Company');
+
+
+
+-- 8. How many car models are made by Germany? :
+
+SELECT COUNT(*) AS num_models 
+FROM CAR_MODELS cm
+JOIN CAR_MAKERS mak ON cm.MAKER_ID = mak.MAKER_ID
+JOIN COUNTRIES c ON mak.COUNTRY_ID = c.COUNTRY_ID
+WHERE c.COUNTRY_NAME = 'Germany';
+
+
+
+-- 9. Car models made by Japan along with maker details :
+
+SELECT cm.MODEL_NAME, mak.MAKER_NAME, c.COUNTRY_NAME 
+FROM CAR_MODELS cm
+JOIN CAR_MAKERS mak ON cm.MAKER_ID = mak.MAKER_ID
+JOIN COUNTRIES c ON mak.COUNTRY_ID = c.COUNTRY_ID
+WHERE c.COUNTRY_NAME = 'Japan';
+
+
+
+-- 10. Car models with highest and lowest values for attributes 
+
+-- Highest and Lowest MPG :
+
+SELECT 'Highest MPG' AS Attribute, c.model, m.maker, g.country, g.continent, c.mpg AS Value
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.mpg = (SELECT MAX(mpg) FROM Cars)
+UNION ALL
+SELECT 'Lowest MPG', c.model, m.maker, g.country, g.continent, c.mpg
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.mpg = (SELECT MIN(mpg) FROM Cars)
+
+
+-- Highest and Lowest Cylinders :
+
+UNION ALL
+SELECT 'Highest Cylinders', c.model, m.maker, g.country, g.continent, c.cylinders
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.cylinders = (SELECT MAX(cylinders) FROM Cars)
+UNION ALL
+SELECT 'Lowest Cylinders', c.model, m.maker, g.country, g.continent, c.cylinders
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.cylinders = (SELECT MIN(cylinders) FROM Cars)
+
+
+-- Highest and Lowest Engine Displacement :
+
+UNION ALL
+SELECT 'Highest Engine Displacement', c.model, m.maker, g.country, g.continent, c.edispl
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.edispl = (SELECT MAX(edispl) FROM Cars)
+UNION ALL
+SELECT 'Lowest Engine Displacement', c.model, m.maker, g.country, g.continent, c.edispl
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.edispl = (SELECT MIN(edispl) FROM Cars)
+
+
+-- Highest and Lowest Horsepower :
+
+UNION ALL
+SELECT 'Highest Horsepower', c.model, m.maker, g.country, g.continent, c.horsepower
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.horsepower = (SELECT MAX(horsepower) FROM Cars)
+UNION ALL
+SELECT 'Lowest Horsepower', c.model, m.maker, g.country, g.continent, c.horsepower
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.horsepower = (SELECT MIN(horsepower) FROM Cars)
+
+
+-- Highest and Lowest Weight  :
+
+UNION ALL
+SELECT 'Highest Weight', c.model, m.maker, g.country, g.continent, c.weight
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.weight = (SELECT MAX(weight) FROM Cars)
+UNION ALL
+SELECT 'Lowest Weight', c.model, m.maker, g.country, g.continent, c.weight
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.weight = (SELECT MIN(weight) FROM Cars)
+
+
+-- Highest and Lowest Acceleration  :
+UNION ALL
+SELECT 'Highest Acceleration', c.model, m.maker, g.country, g.continent, c.acceleration
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.acceleration = (SELECT MAX(acceleration) FROM Cars)
+UNION ALL
+SELECT 'Lowest Acceleration', c.model, m.maker, g.country, g.continent, c.acceleration
+FROM Cars c
+JOIN Manufacturers m ON c.manufacturer_id = m.id
+JOIN Geography g ON m.geography_id = g.id
+WHERE c.acceleration = (SELECT MIN(acceleration) FROM Cars);
+
+
+
+-- 11. Year with most cars made :
+
+SELECT MODEL_YEAR, COUNT(*) AS num_cars 
+FROM CAR_MODELS 
+GROUP BY MODEL_YEAR 
+ORDER BY num_cars DESC 
+FETCH FIRST 1 ROWS ONLY; 
+
+
+
+-- 12. Year with the fewest cars made :
+
+SELECT MODEL_YEAR, COUNT(*) AS num_cars 
+FROM CAR_MODELS 
+GROUP BY MODEL_YEAR 
+ORDER BY num_cars ASC 
+FETCH FIRST 1 ROWS ONLY;
+
+
+
+-- 13. Min, Max, and Average of attributes around years  :
+
+SELECT 
+    year,
+    MIN(mpg) AS Min_MPG,
+    MAX(mpg) AS Max_MPG,
+    AVG(mpg) AS Avg_MPG,
+    
+    MIN(cylinders) AS Min_Cylinders,
+    MAX(cylinders) AS Max_Cylinders,
+    AVG(cylinders) AS Avg_Cylinders,
+    
+    MIN(edispl) AS Min_Edispl,
+    MAX(edispl) AS Max_Edispl,
+    AVG(edispl) AS Avg_Edispl,
+    
+    MIN(horsepower) AS Min_Horsepower,
+    MAX(horsepower) AS Max_Horsepower,
+    AVG(horsepower) AS Avg_Horsepower,
+    
+    MIN(weight) AS Min_Weight,
+    MAX(weight) AS Max_Weight,
+    AVG(weight) AS Avg_Weight,
+    
+    MIN(acceleration) AS Min_Acceleration,
+    MAX(acceleration) AS Max_Acceleration,
+    AVG(acceleration) AS Avg_Acceleration
+FROM Cars
+GROUP BY year
+ORDER BY year;
+
+
+
+
+-- 14. Statistical analysis for Horsepower, Weight, Accel
+
+-- Horsepower :
+
+SELECT AVG(HORSEPOWER) AS mean_horsepower,
+       MEDIAN(HORSEPOWER) AS median_horsepower,
+       STDDEV(HORSEPOWER) AS stddev_horsepower
+FROM CAR_MODELS;
+
+
+-- Weight :
+
+SELECT AVG(WEIGHT) AS mean_weight,
+       MEDIAN(WEIGHT) AS median_weight,
+       STDDEV(WEIGHT) AS stddev_weight
+FROM CAR_MODELS;
+
+
+-- Acceleration :
+
+SELECT AVG(ACCEL) AS mean_accel,
+       MEDIAN(ACCEL) AS median_accel,
+       STDDEV(ACCEL) AS stddev_accel
+FROM CAR_MODELS;
+
+
+
+
+ 
